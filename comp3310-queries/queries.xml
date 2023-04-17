@@ -1,1 +1,26 @@
 <queries language="java"/>
+
+<query id="A-1-11" name="Assignment 1 Query" description="This is a query that does detects all method access to println of System.out and has a descendent that calls a method access to getMessage()">
+    <![CDATA[
+        import java
+
+        from MethodAccess callp, MethodAccess callm
+        where
+            (callp.getMethod().hasName("printStackTrace")
+            and
+            callp.getMethod().getDeclaringType().hasQualifiedName("java.lang", "Throwable")
+            and
+            callp.getNumArgument() = 0)
+            or
+            (callp.getMethod().hasName("println")
+            and
+            callp.getMethod().getDeclaringType().hasQualifiedName("java.io", "PrintStream")
+            and
+            callp.getAChildExpr*() = callm
+            and
+            callm.getMethod().hasName("getMessage")
+            and
+            callm.getMethod().getDeclaringType().hasQualifiedName("java.lang", "Throwable"))
+        select callp, "This prints vulnerabilities to the terminal"
+    ]]>
+</query>
